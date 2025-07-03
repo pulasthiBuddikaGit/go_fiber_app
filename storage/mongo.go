@@ -2,38 +2,33 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
-	"github.com/pulasthiBuddikaGit/go_fiber_app/config" // replace with your actual module name
-
+	"github.com/pulasthiBuddikaGit/go_fiber_app/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var Client *mongo.Client              // global MongoDB client
-var UserDB *mongo.Database          // global MongoDB database instance
+var Client *mongo.Client       // exported Mongo client
+var UserDB *mongo.Database     // exported DB instance
 
 func InitMongo(cfg *config.Config) {
-	// Create a context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Connect to MongoDB
-	clientOptions := options.Client().ApplyURI(cfg.MongoURI)
-	client, err := mongo.Connect(ctx, clientOptions)
+	clientOpts := options.Client().ApplyURI(cfg.MongoURI)
+
+	client, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
-		log.Fatal("MongoDB connection error:", err)
+		log.Fatalf("❌ Failed to connect to MongoDB: %v", err)
 	}
 
-	// Check the connection
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		log.Fatal("MongoDB ping failed:", err)
+	if err := client.Ping(ctx, nil); err != nil {
+		log.Fatalf("❌ MongoDB ping failed: %v", err)
 	}
 
-	fmt.Println("✅ Connected to MongoDB")
+	log.Println("✅ MongoDB connection established")
 
 	Client = client
 	UserDB = client.Database(cfg.Database)
