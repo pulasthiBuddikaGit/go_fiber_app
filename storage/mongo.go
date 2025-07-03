@@ -12,8 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var Client *mongo.Client
-var UserDB *mongo.Database
+var Client *mongo.Client              // global MongoDB client
+var UserDB *mongo.Database          // global MongoDB database instance
 
 func InitMongo(cfg *config.Config) {
 	// Create a context with timeout
