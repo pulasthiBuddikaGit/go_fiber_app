@@ -97,7 +97,6 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 	})
 }
 
-
 // DeleteUserHandler handles DELETE /users/:id
 func DeleteUserHandler(c *fiber.Ctx) error {
 	id := c.Params("id")
