@@ -60,6 +60,7 @@ func GetAllUsersHandler(c *fiber.Ctx) error {
 }
 
 
+
 // GetAllUsersHandler handles GET /users
 // func GetAllUsersHandler(ctx *fiber.Ctx) error {
 // 	users, err := repository.GetAllUsers()

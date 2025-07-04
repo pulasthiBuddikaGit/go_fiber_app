@@ -75,6 +75,26 @@ func GetAllUsers() ([]model.User, error) {
 	return users, nil
 }
 
+// UpdateUser updates a user's fields by ID
+func UpdateUser(id string, updateData bson.M) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	update := bson.M{"$set": updateData}
+
+	//UpdateOne finds the user and updates it with the provided data
+	result, err := userCollection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
 
 
 
