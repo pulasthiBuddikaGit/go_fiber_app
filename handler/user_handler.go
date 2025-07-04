@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/model"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/repository"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // CreateUserHandler handles POST /users
@@ -57,6 +58,43 @@ func GetAllUsersHandler(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(users)
+}
+
+// UpdateUserHandler handles PUT /users/:id
+func UpdateUserHandler(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	var updateUser model.User
+	if err := c.BodyParser(&updateUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	updateData := bson.M{}
+	if updateUser.Name != "" {
+		updateData["name"] = updateUser.Name
+	}
+	if updateUser.Email != "" {
+		updateData["email"] = updateUser.Email
+	}
+
+	result, err := repository.UpdateUser(id, updateData)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update user",
+		})
+	}
+
+	if result.MatchedCount == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "User updated successfully",
+	})
 }
 
 
