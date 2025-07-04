@@ -98,6 +98,29 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 }
 
 
+// DeleteUserHandler handles DELETE /users/:id
+func DeleteUserHandler(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	result, err := repository.DeleteUser(id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete user",
+		})
+	}
+
+	if result.DeletedCount == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "User deleted successfully",
+	})
+}
+
+
 
 // GetAllUsersHandler handles GET /users
 // func GetAllUsersHandler(ctx *fiber.Ctx) error {
