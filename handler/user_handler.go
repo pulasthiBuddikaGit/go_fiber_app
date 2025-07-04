@@ -30,18 +30,20 @@ func CreateUserHandler(ctx *fiber.Ctx) error {
 }
 
 // GetUserByIDHandler handles GET /users/:id
-// func GetUserByIDHandler(ctx *fiber.Ctx) error {
-// 	id := ctx.Params("id")
+func GetUserByIDHandler(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
 
-// 	user, err := repository.GetUserByID(id)
-// 	if err != nil {
-// 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-// 			"error": "User not found",
-// 		})
-// 	}
+	user, err := repository.GetUserByID(id)
 
-// 	return ctx.JSON(user)
-// }
+	//if returned err variable from GetUserByID is not nil, it means user was not found
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	return ctx.JSON(user)
+}
 
 // GetAllUsersHandler handles GET /users
 // func GetAllUsersHandler(ctx *fiber.Ctx) error {

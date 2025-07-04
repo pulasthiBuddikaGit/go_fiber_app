@@ -23,11 +23,11 @@ func main() {
 	// Create a new Fiber app
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Welcome to the Go Fiber App!")
-	})
+	// app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.SendString("Welcome to the Go Fiber App!")
+	// })
 
-	// 🟡 You can register routes later here...
+	// Register user routes
 	routes.RegisterUserRoutes(app)
 
 	// Start the Fiber server

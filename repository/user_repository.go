@@ -8,6 +8,8 @@ import (
 
 	"github.com/pulasthiBuddikaGit/go_fiber_app/model"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var userCollection *mongo.Collection
@@ -24,6 +26,26 @@ func CreateUser(user *model.User) (*mongo.InsertOneResult, error) {
 	defer cancel()
 
 	return userCollection.InsertOne(ctx, user)
+}
+
+// GetUserByID fetches a user document by its MongoDB ObjectID
+func GetUserByID(id string) (*model.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Convert the hex string ID to MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user model.User
+	err = userCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 
