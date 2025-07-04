@@ -46,6 +46,21 @@ func GetUserByIDHandler(ctx *fiber.Ctx) error {
 }
 
 // GetAllUsersHandler handles GET /users
+func GetAllUsersHandler(c *fiber.Ctx) error {
+
+	log.Println("📄 GetAllUsersHandler called")
+	users, err := repository.GetAllUsers()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch users",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(users)
+}
+
+
+// GetAllUsersHandler handles GET /users
 // func GetAllUsersHandler(ctx *fiber.Ctx) error {
 // 	users, err := repository.GetAllUsers()
 // 	if err != nil {
