@@ -49,6 +49,7 @@ func GetUserByID(id string) (*model.User, error) {
 }
 
 // GetAllUsers returns all users from the collection
+//this returns 
 func GetAllUsers() ([]model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -89,6 +90,30 @@ func UpdateUser(id string, updateData bson.M) (*mongo.UpdateResult, error) {
 
 	//UpdateOne finds the user and updates it with the provided data
 	result, err := userCollection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	if err != nil {
+		return nil, err
+	}
+
+	/*This function returns struct provided by the MongoDB driver
+	That struct name is UpdateResult
+	this struct contains attributes like:
+	result.MatchedCount  // is 1 if the user was found, otherwise 0
+	result.ModifiedCount // is 1 if the update actually changed any fields */
+
+	return result, nil
+}
+
+// DeleteUser deletes a user by ID
+func DeleteUser(id string) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := userCollection.DeleteOne(ctx, bson.M{"_id": objID})
 	if err != nil {
 		return nil, err
 	}
