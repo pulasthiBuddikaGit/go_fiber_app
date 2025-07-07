@@ -66,6 +66,7 @@ type UpdatePhoneRequest struct {
 	PhoneNumber string `json:"phoneNumber"`
 }
 
+// UpdateUserPhoneHandler handles PUT /user-phones/:id
 func UpdateUserPhoneHandler(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -91,5 +92,27 @@ func UpdateUserPhoneHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "Phone number updated successfully",
+	})
+}
+
+// DeleteUserPhoneHandler handles DELETE /user-phones/:id
+func DeleteUserPhoneHandler(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	result, err := repository.DeleteUserPhoneByID(id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete phone number",
+		})
+	}
+
+	if result.DeletedCount == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Phone number not found",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Phone number deleted successfully",
 	})
 }
