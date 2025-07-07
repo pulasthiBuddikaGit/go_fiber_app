@@ -44,6 +44,7 @@ func GetUserPhoneNumbersByUserID(userID string) ([]model.UserPhone, error) {
 
 	var phones []model.UserPhone
 	for cursor.Next(ctx) {
+		//bcz this var is UserPhone type this function will return UserPhone type
 		var phone model.UserPhone
 		if err := cursor.Decode(&phone); err != nil {
 			return nil, err
