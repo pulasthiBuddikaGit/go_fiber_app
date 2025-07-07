@@ -19,6 +19,7 @@ func main() {
 
 	// Initialize repositories
 	repository.InitUserRepository(storage.Client.Database(cfg.Database))
+	repository.InitUserPhoneRepository(storage.Client.Database(cfg.Database))
 
 	// Create a new Fiber app
 	app := fiber.New()
@@ -29,6 +30,7 @@ func main() {
 
 	// Register user routes
 	routes.RegisterUserRoutes(app)
+	routes.RegisterUserPhoneRoutes(app)
 
 	// Start the Fiber server
 	log.Println("🚀 Server is running on http://localhost:8080")
