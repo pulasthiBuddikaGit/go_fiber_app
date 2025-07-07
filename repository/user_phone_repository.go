@@ -70,3 +70,16 @@ func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult,
 
 	return userPhoneCollection.UpdateOne(ctx, filter, update)
 }
+
+// DeleteUserPhoneByID deletes a user phone document by its ID
+func DeleteUserPhoneByID(id string) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return userPhoneCollection.DeleteOne(ctx, bson.M{"_id": objID})
+}
