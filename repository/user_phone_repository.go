@@ -54,3 +54,19 @@ func GetUserPhoneNumbersByUserID(userID string) ([]model.UserPhone, error) {
 
 	return phones, nil
 }
+
+// UpdateUserPhoneByID updates the phone number of a user by their ID
+func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"phoneNumber": newPhoneNumber}}
+
+	return userPhoneCollection.UpdateOne(ctx, filter, update)
+}
