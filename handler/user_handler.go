@@ -30,6 +30,11 @@ func CreateUserHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
+	//set the createdAt 
+	currentTime := time.Now()
+	user.CreatedAt = currentTime
+	user.UpdatedAt = currentTime
+
 	// Hash the password using bcrypt
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
