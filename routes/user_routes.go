@@ -13,7 +13,8 @@ import (
 func RegisterUserRoutes(app fiber.Router) {
 	userGroup := app.Group("/users")
 
-	userGroup.Post("/", handler.CreateUserHandler)
+	//userGroup.Post("/", handler.CreateUserHandler)
+	userGroup.Post("/", handler.CreateUserWithPhonesHandler) // Updated to use the new handler for user with phones
 	userGroup.Get("/", handler.GetAllUsersHandler)
 	userGroup.Get("/:id", handler.GetUserByIDHandler)
 	userGroup.Put("/:id", handler.UpdateUserHandler)
