@@ -3,6 +3,8 @@ package handler
 import (
 	"log"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/model"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/repository"
@@ -20,6 +22,22 @@ func CreateUserHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
+		// Validate required fields (optional but recommended)
+	if user.Password == "" || user.Email == "" || user.Name == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Name, Email, and Password are required",
+		})
+	}
+
+	// Hash the password using bcrypt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to hash password",
+		})
+	}
+	user.Password = string(hashedPassword)
+
 	result, err := repository.CreateUser(&user)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -29,6 +47,7 @@ func CreateUserHandler(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusCreated).JSON(result)
 }
+
 
 // GetUserByIDHandler handles GET /users/:id
 func GetUserByIDHandler(ctx *fiber.Ctx) error {

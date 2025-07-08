@@ -25,6 +25,11 @@ func CreateUser(user *model.User) (*mongo.InsertOneResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Set the CreatedAt and UpdatedAt fields to the current time
+	currentTime := time.Now()
+	user.CreatedAt = currentTime
+	user.UpdatedAt = currentTime
+
 	return userCollection.InsertOne(ctx, user)
 }
 
