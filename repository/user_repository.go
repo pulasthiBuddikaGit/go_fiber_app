@@ -26,9 +26,8 @@ func CreateUser(user *model.User) (*mongo.InsertOneResult, error) {
 	defer cancel()
 
 	// Set the CreatedAt and UpdatedAt fields to the current time
-	currentTime := time.Now()
-	user.CreatedAt = currentTime
-	user.UpdatedAt = currentTime
+	//mn meka methna update kale mkd user me deatils 
+	
 
 	return userCollection.InsertOne(ctx, user)
 }
