@@ -15,7 +15,7 @@ import (
 
 
 //bind the both user and phone numbers to one endpoint and call the CreateUser and CreateUserPhone functions to save both details in separate collections
-func CreateUserWithPhonesHandler(c *fiber.Ctx) error {
+func CreateUserHandler(c *fiber.Ctx) error {
 	var req model.UserWithPhoneRequest
 
 	//req body has both user details and phone numbers
@@ -83,6 +83,40 @@ func CreateUserWithPhonesHandler(c *fiber.Ctx) error {
 }
 
 
+func GetUserByIDHandler(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+
+	// Fetch the user
+	user, err := repository.GetUserByID(id)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	// Fetch user's phone numbers
+	//phones, err := repository.GetPhoneNumbersByUserID(id)
+	phones, err := repository.GetPhoneNumbersByUserID(id)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve phone numbers",
+		})
+	}
+
+	// Combine response
+	//this response struct is used to send the user details and phone numbers in one response
+	//It is mirror UserWithPhones model
+	response := model.UserWithPhones{
+		//ID:           user.ID.Hex(),
+		Name:         user.Name,
+		Email:        user.Email,
+		PhoneNumbers: phones,
+	}
+
+	return ctx.JSON(response)
+}
+
+
 // CreateUserHandler handles POST /users
 // func CreateUserHandler(ctx *fiber.Ctx) error {
 // 	log.Println("📩 CreateUserHandler called")
@@ -127,20 +161,20 @@ func CreateUserWithPhonesHandler(c *fiber.Ctx) error {
 
 
 // GetUserByIDHandler handles GET /users/:id
-func GetUserByIDHandler(ctx *fiber.Ctx) error {
-	id := ctx.Params("id")
+// func GetUserByIDHandler(ctx *fiber.Ctx) error {
+// 	id := ctx.Params("id")
 
-	user, err := repository.GetUserByID(id)
+// 	user, err := repository.GetUserByID(id)
 
-	//if returned err variable from GetUserByID is not nil, it means user was not found
-	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "User not found",
-		})
-	}
+// 	//if returned err variable from GetUserByID is not nil, it means user was not found
+// 	if err != nil {
+// 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+// 			"error": "User not found",
+// 		})
+// 	}
 
-	return ctx.JSON(user)
-}
+// 	return ctx.JSON(user)
+// }
 
 // GetAllUsersHandler handles GET /users
 func GetAllUsersHandler(c *fiber.Ctx) error {

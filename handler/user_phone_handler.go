@@ -48,18 +48,18 @@ func CreateUserPhoneHandler(c *fiber.Ctx) error {
 }
 
 // GetUserPhoneNumbersByUserIDHandler handles GET /user-phones/:userId
-func GetUserPhoneNumbersByUserIDHandler(c *fiber.Ctx) error {
-	userID := c.Params("userId")
+// func GetUserPhoneNumbersByUserIDHandler(c *fiber.Ctx) error {
+// 	userID := c.Params("userId")
 
-	phones, err := repository.GetUserPhoneNumbersByUserID(userID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to retrieve phone numbers",
-		})
-	}
+// 	phones, err := repository.GetUserPhoneNumbersByUserID(userID)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 			"error": "Failed to retrieve phone numbers",
+// 		})
+// 	}
 
-	return c.JSON(phones)
-}
+// 	return c.JSON(phones)
+// }
 
 //I am using this struct because user is only updating phone number
 type UpdatePhoneRequest struct {

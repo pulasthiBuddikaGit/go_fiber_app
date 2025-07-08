@@ -1,5 +1,6 @@
 package model
 
+//Used to accept input from the client (e.g., POST /users)
 type UserWithPhoneRequest struct {
 	Name        string   `json:"name"`
 	Email       string   `json:"email"`
