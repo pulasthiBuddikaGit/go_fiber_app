@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -97,6 +98,9 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 	if updateUser.Email != "" {
 		updateData["email"] = updateUser.Email
 	}
+
+	//update the updatedAt field to the current time
+	updateData["updatedAt"] = time.Now()
 
 	result, err := repository.UpdateUser(id, updateData)
 	if err != nil {
