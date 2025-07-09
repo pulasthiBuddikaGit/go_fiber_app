@@ -130,43 +130,70 @@ func GetAllUsersHandler(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
-// UpdateUserHandler handles PUT /users/:id
 func UpdateUserHandler(c *fiber.Ctx) error {
-	id := c.Params("id")
+	userID := c.Params("id")
 
-	var updateUser model.User
-	if err := c.BodyParser(&updateUser); err != nil {
+	var payload model.UserWithPhones
+	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
+	// --- 1. Update user fields ---
 	updateData := bson.M{}
-	if updateUser.Name != "" {
-		updateData["name"] = updateUser.Name
+	if payload.Name != "" {
+		updateData["name"] = payload.Name
 	}
-	if updateUser.Email != "" {
-		updateData["email"] = updateUser.Email
+	if payload.Email != "" {
+		updateData["email"] = payload.Email
 	}
-
-	//update the updatedAt field to the current time
 	updateData["updatedAt"] = time.Now()
 
-	result, err := repository.UpdateUser(id, updateData)
+	userResult, err := repository.UpdateUser(userID, updateData)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update user",
 		})
 	}
-
-	if result.MatchedCount == 0 {
+	if userResult.MatchedCount == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "User not found",
 		})
 	}
 
+	// --- 2. Delete old phone numbers ---
+	err = repository.DeleteUserPhonesByUserID(userID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to remove old phone numbers",
+		})
+	}
+
+	//ObjectIDFromHex converts a hex string to a primitive.ObjectID
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid user ID",
+		})
+	}
+
+	// --- 3. Insert new phone numbers ---
+	for _, phone := range payload.PhoneNumbers {
+		//Use _ (blank identifier) to ignore the *mongo.InsertOneResult.
+		_ ,err := repository.CreateUserPhone(&model.UserPhone{
+			UserID: userObjID,
+			PhoneNumber: phone,
+		})
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to save phone number: " + phone,
+			})
+		}
+	}
+
 	return c.JSON(fiber.Map{
-		"message": "User updated successfully",
+		"message": "User and phone numbers updated successfully",
 	})
 }
 

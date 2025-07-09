@@ -53,7 +53,6 @@ func GetPhoneNumbersByUserID(userID string) ([]string, error) {
 	return numbers, nil
 }
 
-
 // UpdateUserPhoneByID updates the phone number of a user by their ID
 func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -69,6 +68,21 @@ func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult,
 
 	return userPhoneCollection.UpdateOne(ctx, filter, update)
 }
+
+// DeleteUserPhonesByUserID deletes all phone numbers associated with a user by their user ID
+func DeleteUserPhonesByUserID(userID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	_, err = userPhoneCollection.DeleteMany(ctx, bson.M{"userId": objID})
+	return err
+}
+
 
 // DeleteUserPhoneByID deletes a user phone document by its ID
 func DeleteUserPhoneByID(id string) (*mongo.DeleteResult, error) {
