@@ -25,7 +25,6 @@ func CreateUserPhone(phone *model.UserPhone) (*mongo.InsertOneResult, error) {
 	return userPhoneCollection.InsertOne(ctx, phone)
 }
 
-//this function returns string array of phone numbers by userID
 func GetPhoneNumbersByUserID(userID string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -42,18 +41,16 @@ func GetPhoneNumbersByUserID(userID string) ([]string, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var phoneNumbers []string
-	//Iterate through the found docs and append phone.numbers to the phoneNumbers array
+	var numbers []string
 	for cursor.Next(ctx) {
 		var phone model.UserPhone
 		if err := cursor.Decode(&phone); err != nil {
 			return nil, err
 		}
-		//append every phone number to the phoneNumbers array
-		phoneNumbers = append(phoneNumbers, phone.PhoneNumber)
+		numbers = append(numbers, phone.PhoneNumber)
 	}
 
-	return phoneNumbers, nil
+	return numbers, nil
 }
 
 

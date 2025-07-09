@@ -117,73 +117,13 @@ func GetUserByIDHandler(ctx *fiber.Ctx) error {
 }
 
 
-// CreateUserHandler handles POST /users
-// func CreateUserHandler(ctx *fiber.Ctx) error {
-// 	log.Println("📩 CreateUserHandler called")
-
-// 	var user model.User
-// 	if err := ctx.BodyParser(&user); err != nil {
-// 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": "Invalid request body",
-// 		})
-// 	}
-
-// 		// Validate required fields (optional but recommended)
-// 	if user.Password == "" || user.Email == "" || user.Name == "" {
-// 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"error": "Name, Email, and Password are required",
-// 		})
-// 	}
-
-// 	//set the createdAt 
-// 	currentTime := time.Now()
-// 	user.CreatedAt = currentTime
-// 	user.UpdatedAt = currentTime
-
-// 	// Hash the password using bcrypt
-// 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-// 	if err != nil {
-// 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": "Failed to hash password",
-// 		})
-// 	}
-// 	user.Password = string(hashedPassword)
-
-// 	result, err := repository.CreateUser(&user)
-// 	if err != nil {
-// 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error": "Failed to create user",
-// 		})
-// 	}
-
-// 	return ctx.Status(fiber.StatusCreated).JSON(result)
-// }
-
-
-// GetUserByIDHandler handles GET /users/:id
-// func GetUserByIDHandler(ctx *fiber.Ctx) error {
-// 	id := ctx.Params("id")
-
-// 	user, err := repository.GetUserByID(id)
-
-// 	//if returned err variable from GetUserByID is not nil, it means user was not found
-// 	if err != nil {
-// 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-// 			"error": "User not found",
-// 		})
-// 	}
-
-// 	return ctx.JSON(user)
-// }
-
-// GetAllUsersHandler handles GET /users
 func GetAllUsersHandler(c *fiber.Ctx) error {
-
 	log.Println("📄 GetAllUsersHandler called")
+
 	users, err := repository.GetAllUsers()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to fetch users",
+			"error": "Failed to fetch users with phone numbers",
 		})
 	}
 

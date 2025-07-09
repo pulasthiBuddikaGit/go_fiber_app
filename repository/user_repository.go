@@ -52,9 +52,8 @@ func GetUserByID(id string) (*model.User, error) {
 	return &user, nil
 }
 
-// GetAllUsers returns all users from the collection
-//this returns 
-func GetAllUsers() ([]model.User, error) {
+
+func GetAllUsers() ([]model.UserWithPhones, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -64,20 +63,34 @@ func GetAllUsers() ([]model.User, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var users []model.User
+	var results []model.UserWithPhones
+
 	for cursor.Next(ctx) {
 		var user model.User
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}
-		users = append(users, user)
+
+		// Fetch phone numbers for each user
+		phones, err := GetPhoneNumbersByUserID(user.ID.Hex())
+		if err != nil {
+			return nil, err
+		}
+
+		result := model.UserWithPhones{
+			//ID:           user.ID.Hex(),
+			Name:         user.Name,
+			Email:        user.Email,
+			PhoneNumbers: phones,
+		}
+		results = append(results, result)
 	}
 
 	if err := cursor.Err(); err != nil {
 		return nil, err
 	}
 
-	return users, nil
+	return results, nil
 }
 
 // UpdateUser updates a user's fields by ID
