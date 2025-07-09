@@ -12,7 +12,7 @@ func RegisterUserPhoneRoutes(app fiber.Router) {
 
 	userPhoneGroup.Post("/", handler.CreateUserPhoneHandler)
 	//userPhoneGroup.Get("/:userId", handler.GetUserPhoneNumbersByUserIDHandler)
-	userPhoneGroup.Put("/:id", handler.UpdateUserPhoneHandler)
+	//userPhoneGroup.Put("/:id", handler.UpdateUserPhoneHandler)
 	userPhoneGroup.Delete("/:id", handler.DeleteUserPhoneHandler)
 
 }
