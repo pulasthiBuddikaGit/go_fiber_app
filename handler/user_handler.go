@@ -178,7 +178,7 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// --- 3. Insert new phone numbers ---
+	// --- 3. Insert new phone numbers from payload---
 	for _, phone := range payload.PhoneNumbers {
 		//Use _ (blank identifier) to ignore the *mongo.InsertOneResult.
 		_ ,err := repository.CreateUserPhone(&model.UserPhone{
@@ -197,27 +197,57 @@ func UpdateUserHandler(c *fiber.Ctx) error {
 	})
 }
 
-// DeleteUserHandler handles DELETE /users/:id
 func DeleteUserHandler(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result, err := repository.DeleteUser(id)
+	// First, delete the user
+	userResult, err := repository.DeleteUser(id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete user",
 		})
 	}
 
-	if result.DeletedCount == 0 {
+	if userResult.DeletedCount == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "User not found",
 		})
 	}
 
+	// Then, delete their phone numbers
+	if err := repository.DeleteUserPhonesByUserID(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "User deleted but failed to delete phone numbers",
+		})
+	}
+
 	return c.JSON(fiber.Map{
-		"message": "User deleted successfully",
+		"message": "User and associated phone numbers deleted successfully",
 	})
 }
+
+
+// DeleteUserHandler handles DELETE /users/:id
+// func DeleteUserHandler(c *fiber.Ctx) error {
+// 	id := c.Params("id")
+
+// 	result, err := repository.DeleteUser(id)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 			"error": "Failed to delete user",
+// 		})
+// 	}
+
+// 	if result.DeletedCount == 0 {
+// 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+// 			"error": "User not found",
+// 		})
+// 	}
+
+// 	return c.JSON(fiber.Map{
+// 		"message": "User deleted successfully",
+// 	})
+// }
 
 
 
