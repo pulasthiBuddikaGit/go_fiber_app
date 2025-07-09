@@ -18,6 +18,7 @@ func InitUserPhoneRepository(db *mongo.Database) {
 }
 
 // CreateUserPhone inserts a new user phone document into the collection
+//Needed
 func CreateUserPhone(phone *model.UserPhone) (*mongo.InsertOneResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -54,22 +55,24 @@ func GetPhoneNumbersByUserID(userID string) ([]string, error) {
 }
 
 // UpdateUserPhoneByID updates the phone number of a user by their ID
-// func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	defer cancel()
+// this function is used to update a specific phone number using phone ID
+func UpdateUserPhoneByID(id string, newPhoneNumber string) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-// 	objID, err := primitive.ObjectIDFromHex(id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
 
-// 	filter := bson.M{"_id": objID}
-// 	update := bson.M{"$set": bson.M{"phoneNumber": newPhoneNumber}}
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"phoneNumber": newPhoneNumber}}
 
-// 	return userPhoneCollection.UpdateOne(ctx, filter, update)
-// }
+	return userPhoneCollection.UpdateOne(ctx, filter, update)
+}
 
 // DeleteUserPhonesByUserID deletes all phone numbers associated with a user by their user ID
+//this function is used to delete all phone number of a user
 func DeleteUserPhonesByUserID(userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -85,6 +88,7 @@ func DeleteUserPhonesByUserID(userID string) error {
 
 
 // DeleteUserPhoneByID deletes a user phone document by its ID
+// this function is used to delete a specific phone number using phone ID
 func DeleteUserPhoneByID(id string) (*mongo.DeleteResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
