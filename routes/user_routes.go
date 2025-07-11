@@ -7,17 +7,23 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/handler"
+	"github.com/pulasthiBuddikaGit/go_fiber_app/middleware"
 )
 
 // RegisterUserRoutes defines routes related to users
 func RegisterUserRoutes(app fiber.Router) {
 	userGroup := app.Group("/users")
 
-	userGroup.Post("/", handler.CreateUserHandler) // Updated to use the new handler for user with phones
-	userGroup.Get("/", handler.GetAllUsersHandler)
-	userGroup.Get("/:id", handler.GetUserByIDHandler)
-	userGroup.Put("/:id", handler.UpdateUserHandler)
-	userGroup.Delete("/:id", handler.DeleteUserHandler)
+	//Public routes
+	userGroup.Post("/", handler.CreateUserHandler) 
+
+	//Protected routes
+	protected := userGroup.Group("/", middleware.JWTProtected())
+
+	protected.Get("/", handler.GetAllUsersHandler)
+	protected.Get("/:id", handler.GetUserByIDHandler)
+	protected.Put("/:id", handler.UpdateUserHandler)
+	protected.Delete("/:id", handler.DeleteUserHandler)
 }
 
 
