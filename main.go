@@ -31,6 +31,7 @@ func main() {
 	// Register user routes
 	routes.RegisterUserRoutes(app)
 	routes.RegisterUserPhoneRoutes(app)
+	routes.RegisterAuthRoutes(app)
 
 	// Start the Fiber server
 	log.Println("🚀 Server is running on http://localhost:8080")

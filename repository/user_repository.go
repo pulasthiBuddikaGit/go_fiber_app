@@ -5,11 +5,13 @@ package repository
 import (
 	"context"
 	"time"
+	"log"
 
 	"github.com/pulasthiBuddikaGit/go_fiber_app/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var userCollection *mongo.Collection
@@ -17,6 +19,23 @@ var userCollection *mongo.Collection
 // InitUserRepository initializes the user collection with the given MongoDB database
 func InitUserRepository(db *mongo.Database) {
 	userCollection = db.Collection("users")
+
+		// Create unique index on email field
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{{Key: "email", Value: 1}}, // Index key
+		Options: options.Index().SetUnique(true),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	//try to create this index when user inserting a new user
+	_, err := userCollection.Indexes().CreateOne(ctx, indexModel)
+	if err != nil {
+		log.Fatal("❌ Failed to create unique index on email:", err)
+	}
+
+	log.Println("✅ Unique index on email created (or already exists)")
 }
 
 // CreateUser inserts a new user document into the MongoDB "users" collection
@@ -92,6 +111,22 @@ func GetAllUsers() ([]model.UserWithPhones, error) {
 
 	return results, nil
 }
+
+// repository/user_repository.go
+//because of this function we had to make email field unique
+func GetUserByEmail(email string) (*model.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user model.User
+	err := userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+
 
 // UpdateUser updates a user's fields by ID
 func UpdateUser(id string, updateData bson.M) (*mongo.UpdateResult, error) {

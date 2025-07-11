@@ -10,6 +10,7 @@ import (
 type Config struct {
 	MongoURI string
 	Database string
+	JWTSecret  string
 }
 
 func LoadConfig() *Config {
@@ -21,5 +22,6 @@ func LoadConfig() *Config {
 	return &Config{
 		MongoURI: os.Getenv("MongoDB_URL"),
 		Database: os.Getenv("MongoDB_DB"),
+		JWTSecret:  os.Getenv("JWT_SECRET"),
 	}
 }
