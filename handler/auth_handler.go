@@ -6,16 +6,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pulasthiBuddikaGit/go_fiber_app/repository"
-	"github.com/pulasthiBuddikaGit/go_fiber_app/config"
 	//"github.com/pulasthiBuddikaGit/go_fiber_app/model"
 	"golang.org/x/crypto/bcrypt"
-	//"os"
+	"os"
 )
 
-//var jwtSecret = []byte(os.Getenv("JWT_SECRET")) // Set this in your .env
-var cfg *config.Config
-
-var jwtSecret = cfg.JWTSecret
+//get the JWT secret from environment variable
+// Alternatively, you can use a config package to load this from a config file
+var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 func LoginHandler(c *fiber.Ctx) error {
 	var creds struct {
